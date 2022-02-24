@@ -1,8 +1,9 @@
-function main(){
-    const idNode = document.getElementById("orderId");
-    idNode.innerText = localStorage.getItem("orderId");
-    console.log(localStorage.getItem("orderId"))
-    localStorage.clear();
-}
+/*Je récupère l'id produit depuis l'Url avec URLSearchParams*/
+let params = (new URL(document.location)).searchParams;
+let orderId = params.get("id");
 
-main();
+//Je cible le numéro de commande
+let idProduct = document.querySelector("#orderId");
+idProduct.innerText = orderId;
+//Je supprime les informations stockées dans le local storage
+sessionStorage.clear();

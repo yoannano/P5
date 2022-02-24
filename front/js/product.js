@@ -1,127 +1,113 @@
-const str = window.location.href;
-const url = new URL(str);
-const idProduct = url.searchParams.get("id");
-console.log(idProduct);
-let article = "";
+/*Je récupère l'id produit depuis l'Url avec URLSearchParams*/
+let params = new URL(document.location).searchParams;
+let productId = params.get("id");
 
-const colorPicked = document.querySelector("#colors");
-const quantityPicked = document.querySelector("#quantity");
+/*Je déclare mes variables en ciblant les informations pour chaque produit*/
+let title = document.getElementById("title");
+let imageUrl = document.querySelector(".item__img");
+let prix = document.getElementById("price");
+let description = document.getElementById("description");
+let selectColor = document.querySelector("colors");
+let quantity = document.getElementById("quantity");
 
-getArticle();
-
-//************************Récup des articles de l'API*******************
-function getArticle() {
-  fetch("http://localhost:3000/api/products/" + idProduct)
+/*Je récupére mon produit depuis l'API grâce à son Id*/
+function fetchApiProduct() {
+  fetch(`http://localhost:3000/api/products/${productId}`)
     .then((res) => {
-      return res.json();
-    })
-
-    //************************Récup des données de l'API dans le DOM*******************
-    .then(async function (resultatAPI) {
-      article = await resultatAPI;
-      console.table(article);
-      if (article) {
-        getPost(article);
+      if (res.ok) {
+        return res.json(200);
       }
     })
-    .catch((error) => {
-      console.log("Erreur de la requête API");
+    .then((data) => {
+      displayProduct(data);
+    })
+    .catch((err) => {
+      console.log(err);
     });
 }
+fetchApiProduct();
 
-function getPost(article) {
-  // ********************Insertion de l'image********************
-  let productImg = document.createElement("img");
-  document.querySelector(".item__img").appendChild(productImg);
-  productImg.src = article.imageUrl;
-  productImg.alt = article.altTxt;
+/*Je modifie les éléments de la page par rapport au produit sélectionné*/
+function displayProduct(product) {
+  //Nom du produit
+  title.innerText = product.name;
 
-  // ********************Modif du titre "h1"********************
-  let productName = document.getElementById("title");
-  productName.innerHTML = article.name;
+  //Insérer image
+  imageUrl.innerHTML = `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
 
-  // ********************Modif du prix********************
-  let productPrice = document.getElementById("price");
-  productPrice.innerHTML = article.price;
+  //Prix
+  prix.innerText = product.price;
 
-  // ********************Modif de la description********************
-  let productDescription = document.getElementById("description");
-  productDescription.innerHTML = article.description;
+  // Je change le prix selon la quantité désirée
+  quantity.addEventListener("change", () => {
+    prix.innerText = product.price * quantity.value;
+  });
 
-  // ********************Insertion des couleurs********************
-  for (let colors of article.colors) {
-    console.table(colors);
-    let productColors = document.createElement("option");
-    document.querySelector("#colors").appendChild(productColors);
-    productColors.value = colors;
-    productColors.innerHTML = colors;
+  //Description du produit
+  description.innerText = product.description;
+
+  //Je crée une boucle pour le choix des Couleurs
+  for (let i = 0; i < product.colors.length; i++) {
+    selectColor = document.getElementById("colors");
+    selectColor.innerHTML += `<option value="${product.colors[i]}">${product.colors[i]}</option>`;
   }
-  addToCart(article);
-}
 
-//********************************Gestion du panier********************************
-function addToCart(article) {
-  const btn_envoyerPanier = document.querySelector("#addToCart");
+  /*Je cible mon bouton "Ajouter au Panier" */
+  let addCanap = document.querySelector("#addToCart");
 
-  //********************************Ecouter le panier avec 2 conditions couleur non nulle et quantité entre 1 et 100********************************
-  btn_envoyerPanier.addEventListener("click", (event) => {
-    if (
-      quantityPicked.value > 0 &&
-      quantityPicked.value <= 100 &&
-      quantityPicked.value != 0
-    ) {
-      //********************************Recup du choix de la couleur********************************
-      let choixCouleur = colorPicked.value;
+  /* J'écoute le bouton et envoie les données saisies par l'utilisateur dans le panier et local Storage */
+  addCanap.addEventListener("click", () => {
+    //Je déclare un objet selectProduct pour récupère les données saisies par l'utilisateur dont mon Id, la couleur et la quantité et les envoyer au panier
+    let selectProduct = {
+      id: productId,
+      colors: selectColor.value,
+      quantity: quantity.value,
+    };
+    verifyInvalidInput(selectProduct);
 
-      //********************************Recup du choix de la quantité********************************
-      let choixQuantite = quantityPicked.value;
-
-      //********************************Récup des options de l'article à ajouter au panier********************************
-      let optionsProduit = {
-        idProduit: idProduct,
-        couleurProduit: choixCouleur,
-        quantiteProduit: Number(choixQuantite),
-        nomProduit: article.name,
-        prixProduit: article.price,
-        descriptionProduit: article.description,
-        imgProduit: article.imageUrl,
-        altImgProduit: article.altTxt,
-      };
-
-      //************************Initialisation du local storage************************
-      let produitLocalStorage = JSON.parse(localStorage.getItem("produit"));
-
-      window.location.href = "cart.html";
-
-      //************************Importation dans le local storage************************
-      //************************Si le panier comporte déjà au moins 1 article************************
-      if (produitLocalStorage) {
-        const resultFind = produitLocalStorage.find(
-          (el) =>
-            el.idProduit === idProduct && el.couleurProduit === choixCouleur
-        );
-        //************************Si le produit commandé est déjà dans le panier************************
-        if (resultFind) {
-          let newQuantite =
-            parseInt(optionsProduit.quantiteProduit) +
-            parseInt(resultFind.quantiteProduit);
-          resultFind.quantiteProduit = newQuantite;
-          localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
-          console.table(produitLocalStorage);
-          popupConfirmation();
-          //************************Si le produit commandé n'est pas dans le panier************************
-        } else {
-          produitLocalStorage.push(optionsProduit);
-          localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
-          console.table(produitLocalStorage);
-          popupConfirmation();
-        }
-        //****************Si le panier est vide****************
+    //Fonction qui vérifie s'il manque les indications de couleurs et/ou quantité sinon je récupère le panier, j'ajoute et j'enregistre un produit dans le local storage
+    function verifyInvalidInput() {
+      if (selectProduct.colors == []) {
+        alert("Veuillez choisir une couleur");
+      } else if (
+        selectProduct.quantity == 0 ||
+        selectProduct.quantity == "" ||
+        selectProduct.quantity > 100
+      ) {
+        alert("Veuillez indiquer une quantité correcte");
       } else {
-        produitLocalStorage = [];
-        produitLocalStorage.push(optionsProduit);
-        localStorage.setItem("produit", JSON.stringify(produitLocalStorage));
-        console.table(produitLocalStorage);
+        addToSessionStorage(selectProduct);
+        //Chargement de la page cart - Page Panier
+        window.location.assign("cart.html");
+      }
+    }
+
+    //Fonction qui ajoute des produits dans le local storage
+    function addToSessionStorage(product) {
+      //Je récupère le panier
+      let canap = JSON.parse(sessionStorage.getItem("product"));
+      //Si le panier est null, je retourne un tableau vide
+      if (canap == null) {
+        canap = [];
+        //Et je pousse un nouveau produit dans session storage et l'enregistre
+        canap.push(product);
+        sessionStorage.setItem("product", JSON.stringify(canap));
+      } //Sinon si le panier n'est pas vide, je vérifie si le produit enregistré possède le même id et la même couleur que le produit sélectionné
+      else if (canap) {
+        let getProduct = canap.find(
+          (p) => selectProduct.id == p.id && selectProduct.colors == p.colors
+        );
+        //Si je trouve le même produit dans le panier alors j'augmente sa quantité selon la quantité choisie par l'utilisateur
+        if (getProduct) {
+          getProduct.quantity =
+            Number(selectProduct.quantity) + Number(getProduct.quantity);
+          //J'enregistre le nouveau panier
+          sessionStorage.setItem("product", JSON.stringify(canap));
+        } //Sinon la quantité du produit reste inchangé et j'ajoute un nouveau produit dans le local storage et l'enregistre
+        else {
+          canap.push(product);
+          sessionStorage.setItem("product", JSON.stringify(canap));
+        }
       }
     }
   });

@@ -1,48 +1,26 @@
-fillSection();
+/* J'initialise la variable produits de type Array qui contiendra mon api */
+let products = [];
 
-// ************************Récup des articles de l'API************************
-async function getArticles() {
-    const articlesCatch = await fetch("http://localhost:3000/api/products")
-    return await articlesCatch.json();
+/* Je récupére mes produits depuis mon API */
+async function fetchApi() {
+    await fetch("http://localhost:3000/api/products")
+        .then((res) => res.json())
+        .then((data) => (products = data));
 }
 
-    // ************************ données de l'API dans le DOM************************
-async function fillSection() {
-    const result = await getArticles ()
-    .then(function (resultatAPI){
-        const articles = resultatAPI;
-        console.table(articles);
-        for (let article in articles) {
-
-            // ************************Insertion de l'élément "a"************************
-            let productLink = document.createElement("a");
-            document.querySelector(".items").appendChild(productLink);
-            productLink.href = `product.html?id=${resultatAPI[article]._id}`;
-
-            // ************************Insertion "article"************************
-            let productArticle = document.createElement("article");
-            productLink.appendChild(productArticle);
-
-            // ************************Insertion image************************
-            let productImg = document.createElement("img");
-            productArticle.appendChild(productImg);
-            productImg.src = resultatAPI[article].imageUrl;
-            productImg.alt = resultatAPI[article].altTxt;
-
-            // ********************Insertion "h3"********************
-            let productName = document.createElement("h3");
-            productArticle.appendChild(productName);
-            productName.classList.add("productName");
-            productName.innerHTML = resultatAPI[article].name;
-
-            // ********************Insertion description "p"********************
-            let productDescription = document.createElement("p");
-            productArticle.appendChild(productDescription);
-            productDescription.classList.add("productName");
-            productDescription.innerHTML = resultatAPI[article].description;
-        }
-    })
-    .catch (function(error){
-        return error;
-    });
+/* J'attends la réponse de ma fonction fetchApi, puis je crée une fonction avec une boucle pour afficher mes vignettes */
+async function canapDisplay() {
+    await fetchApi();
+    let items = document.getElementById("items");
+    for (let i = 0; i < products.length; i++) {
+        items.innerHTML +=
+            `<a href="./product.html?id=${products[i]._id}">
+              <article>
+                <img src="${products[i].imageUrl}" alt="${products[i].altTxt}">
+                <h3 class="productName">${products[i].name}</h3>
+                <p class="productDescription">${products[i].description}</p>
+              </article>
+            </a>`;
+    }
 }
+canapDisplay();

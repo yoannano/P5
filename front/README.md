@@ -1,3 +1,6 @@
+
+npx kill-port 3013 reinitialise le port
+
 # Kanap #
 
 ![KANAP](front/images/logo.png) 
