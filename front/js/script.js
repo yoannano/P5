@@ -5,7 +5,8 @@ let products = [];
 async function fetchApi() {
     await fetch("http://localhost:3000/api/products")
         .then((res) => res.json())
-        .then((data) => (products = data));
+        .then((data) => (products = data))
+        .catch((err) => res.json(err))
 }
 
 /* J'attends la réponse de ma fonction fetchApi, puis je crée une fonction avec une boucle pour afficher mes vignettes */

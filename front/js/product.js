@@ -67,31 +67,33 @@ function displayProduct(product) {
 
     //Fonction qui vérifie s'il manque les indications de couleurs et/ou quantité sinon je récupère le panier, j'ajoute et j'enregistre un produit dans le local storage
     function verifyInvalidInput() {
-      if (selectProduct.colors == []) {
+    
+      if (selectProduct.colors  == []) {
         alert("Veuillez choisir une couleur");
       } else if (
-        selectProduct.quantity == 0 ||
+        
+        selectProduct.quantity <= 0 ||
         selectProduct.quantity == "" ||
         selectProduct.quantity > 100
       ) {
         alert("Veuillez indiquer une quantité correcte");
       } else {
-        addToSessionStorage(selectProduct);
+        addToLocalStorage(selectProduct);
         //Chargement de la page cart - Page Panier
         window.location.assign("cart.html");
       }
     }
 
     //Fonction qui ajoute des produits dans le local storage
-    function addToSessionStorage(product) {
+    function  addToLocalStorage(product) {
       //Je récupère le panier
-      let canap = JSON.parse(sessionStorage.getItem("product"));
+      let canap = JSON.parse(localStorage.getItem("product"));
       //Si le panier est null, je retourne un tableau vide
       if (canap == null) {
         canap = [];
         //Et je pousse un nouveau produit dans session storage et l'enregistre
         canap.push(product);
-        sessionStorage.setItem("product", JSON.stringify(canap));
+        localStorage.setItem("product", JSON.stringify(canap));
       } //Sinon si le panier n'est pas vide, je vérifie si le produit enregistré possède le même id et la même couleur que le produit sélectionné
       else if (canap) {
         let getProduct = canap.find(
@@ -102,11 +104,11 @@ function displayProduct(product) {
           getProduct.quantity =
             Number(selectProduct.quantity) + Number(getProduct.quantity);
           //J'enregistre le nouveau panier
-          sessionStorage.setItem("product", JSON.stringify(canap));
+          localStorage.setItem("product", JSON.stringify(canap));
         } //Sinon la quantité du produit reste inchangé et j'ajoute un nouveau produit dans le local storage et l'enregistre
         else {
           canap.push(product);
-          sessionStorage.setItem("product", JSON.stringify(canap));
+          localStorage.setItem("product", JSON.stringify(canap));
         }
       }
     }

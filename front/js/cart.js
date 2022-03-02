@@ -72,6 +72,7 @@ let canapDisplay = () => {
 
         //Fonction qui permet de modifier la quantité d'un produit
         function modifyQuantity() {
+          
           //Je cible la quantité à modifier
           quantityProduct = document.querySelectorAll(".itemQuantity");
 
@@ -89,13 +90,20 @@ let canapDisplay = () => {
             //J'écoute item lorsque celui-ci change
             item.addEventListener("change", (event) => {
               event.preventDefault();
-              newQuantity = Number(item.value);
+              newQuantity =  Number(item.value);
+              
 
               //Je crée une boucle pour trouver le produit qui a été ciblé grâce à son id et sa couleur
               for (let i = 0; i < canap.length; i++) {
-                if (canap[i].id == idDelete && canap[i].colors == colorDelete) {
+                if (newQuantity < 0) {
+                  alert("Veuillez indiquer une quantité correcte");
+                  
+                  } 
+               if  (canap[i].id == idDelete && canap[i].colors == colorDelete)  {
+                  
                   canap[i].quantity = newQuantity;
-                }
+                 
+                }  
               }
               //J'appelle la fonction qui calcule le total des quantités et le total des prix
               getTotals();

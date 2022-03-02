@@ -6,4 +6,4 @@ let orderId = params.get("id");
 let idProduct = document.querySelector("#orderId");
 idProduct.innerText = orderId;
 //Je supprime les informations stockées dans le local storage
-sessionStorage.clear();
+localStorage.clear();
