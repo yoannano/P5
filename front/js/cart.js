@@ -96,9 +96,10 @@ let canapDisplay = () => {
               //Je crée une boucle pour trouver le produit qui a été ciblé grâce à son id et sa couleur
               for (let i = 0; i < canap.length; i++) {
                 if (newQuantity < 0) {
-                  alert("Veuillez indiquer une quantité correcte");
-                  
-                  } 
+                  alert("Veuillez indiquer une quantité supérieur a 0 Merci");
+                  window.location.assign("cart.html")
+                  newQuantity = 0
+                  }
                if  (canap[i].id == idDelete && canap[i].colors == colorDelete)  {
                   
                   canap[i].quantity = newQuantity;
