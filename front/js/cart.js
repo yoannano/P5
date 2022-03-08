@@ -1,5 +1,5 @@
 /* Je récupère mon panier du local storage */
-let canap = JSON.parse(sessionStorage.getItem("product"));
+let canap = JSON.parse(localStorage.getItem("product"));
 
 /* J'affiche mon panier */
 let canapDisplay = () => {
@@ -32,7 +32,7 @@ let canapDisplay = () => {
       }
       fetchApiProduct();
 
-      //J'affiche mes produits présents dans le localStorage/sessionStorage
+      //J'affiche mes produits présents dans le localStorage/localStorage
       function displayRestProduct(kanap) {
         //Je crée un nouvel objet en récupérant mes informations du local storage et en ajoutant les autres informations dont le prix
         let productCanap = {
@@ -72,7 +72,6 @@ let canapDisplay = () => {
 
         //Fonction qui permet de modifier la quantité d'un produit
         function modifyQuantity() {
-          
           //Je cible la quantité à modifier
           quantityProduct = document.querySelectorAll(".itemQuantity");
 
@@ -90,21 +89,27 @@ let canapDisplay = () => {
             //J'écoute item lorsque celui-ci change
             item.addEventListener("change", (event) => {
               event.preventDefault();
-              newQuantity =  Number(item.value);
-              
+              newQuantity = Number(item.value);
 
               //Je crée une boucle pour trouver le produit qui a été ciblé grâce à son id et sa couleur
               for (let i = 0; i < canap.length; i++) {
-                if (newQuantity < 0) {
+                if (newQuantity < 0  ) {
                   alert("Veuillez indiquer une quantité supérieur a 0 Merci");
-                  window.location.assign("cart.html")
-                  newQuantity = 0
-                  }
-               if  (canap[i].id == idDelete && canap[i].colors == colorDelete)  {
-                  
-                  canap[i].quantity = newQuantity;
                  
-                }  
+                  newQuantity = 0;
+                 
+                  item.value = newQuantity
+                 
+                }
+                else if (newQuantity > 100) {
+                  newQuantity = 100
+                  item.value = newQuantity
+                  alert("Veuillez mettre moin de 100")
+                }
+                
+                if (canap[i].id == idDelete && canap[i].colors == colorDelete) {
+                  canap[i].quantity = newQuantity;
+                }
               }
               //J'appelle la fonction qui calcule le total des quantités et le total des prix
               getTotals();
@@ -113,7 +118,7 @@ let canapDisplay = () => {
               alert("Votre quantité va être mise à jour");
 
               //J'enregistre le nouveau panier
-              sessionStorage.setItem("product", JSON.stringify(canap));
+              localStorage.setItem("product", JSON.stringify(canap));
             });
           });
         }
@@ -173,7 +178,7 @@ let canapDisplay = () => {
               );
 
               //Je push canap dans le storage
-              sessionStorage.setItem("product", JSON.stringify(canap));
+              localStorage.setItem("product", JSON.stringify(canap));
 
               //Je retire la div cart du dom
               cart.remove();
@@ -222,10 +227,11 @@ let errEmail = document.getElementById("emailErrorMsg");
 
 //----------------------------------FIRST NAME---------------------------------------------------
 //J'écoute la variable inputFirstName avec addEventListener
-inputFirstName.addEventListener("input", function (e) {
-  validFirstName(e.target.value);
-  contact.firstName = e.target.value;
-});
+// inputFirstName.addEventListener("input", function (e) {
+//   e.preventDefault();
+//   validFirstName(e.target.value);
+//   contact.firstName = e.target.value;
+// });
 
 // Fonction qui vérifie à l'aide d'une regex que le champ prénom soit renseigné correctement (ne pas contenir de chiffres)
 function validFirstName(firstName) {
@@ -238,6 +244,7 @@ function validFirstName(firstName) {
   } else {
     errFirstName.innerText = "Veuillez entrer un prénom valide";
     alert("attention plus de trois lettres et pas de caractère spéciaux !!!");
+
     valid = false;
   }
   return valid;
@@ -356,7 +363,7 @@ submitButton.addEventListener("click", (event) => {
     return errAddress || errCity || errEmail || errFirstName || errLastName;
   } else {
     //J'enregistre dans le local storage les informations de l'utilisateur
-    sessionStorage.setItem("contact", JSON.stringify(contact));
+    localStorage.setItem("contact", JSON.stringify(contact));
 
     //Je crée une boucle sur tous les produits du panier pour récupérer les id des produits
     for (let i = 0; i < canap.length; i++) {
