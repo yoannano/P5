@@ -1,4 +1,4 @@
-/* J'initialise la variable produits de type Array qui contiendra mon api */
+/* J'initialise la variable contiendra mon api */
 let products = [];
 
 /* Je récupére mes produits depuis mon API */
@@ -9,7 +9,7 @@ async function fetchApi() {
         .catch((err) => res.json(err))
 }
 
-/* J'attends la réponse de ma fonction fetchApi, puis je crée une fonction avec une boucle pour afficher mes vignettes */
+/* J'attends la réponse de ma fonction fetchApi */
 async function canapDisplay() {
     await fetchApi();
     let items = document.getElementById("items");

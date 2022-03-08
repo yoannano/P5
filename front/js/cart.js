@@ -3,7 +3,7 @@ let canap = JSON.parse(localStorage.getItem("product"));
 
 /* J'affiche mon panier */
 let canapDisplay = () => {
-  // si mon panier est vide alors la quantité et le prix sont 0 et message "Aucun article dans le panier"
+  // si mon panier est vide 
   if (canap == null || canap == 0) {
     document.getElementById("totalQuantity").innerText = 0;
     document.getElementById("totalPrice").innerText = 0;
@@ -11,10 +11,10 @@ let canapDisplay = () => {
       "cart__items"
     ).innerHTML += `<h2 style="text-align:center; margin-bottom:80px;">Vous n'avez aucun article dans votre panier</h2>`;
   }
-  // Sinon pour chaque produit dans le panier, je récupére l'Id depuis mon API pour ensuite afficher toutes les caractéristiques des produits
+  // pour chaque produit dans le panier, je récupére l'Id depuis mon API 
   else {
     for (let product of canap) {
-      //Fonction qui récupère les produits depuis l'API grâce à leur Id
+      // récupère les produits depuis l'API grâce à leur Id
       function fetchApiProduct() {
         fetch(`http://localhost:3000/api/products/` + product.id)
           .then((res) => {
@@ -23,7 +23,7 @@ let canapDisplay = () => {
             }
           })
           .then((data) => {
-            //J'affiche toutes les caractéristiques des produits
+            //J'affiche les caractéristiques des produits
             displayRestProduct(data);
           })
           .catch((err) => {
@@ -32,9 +32,9 @@ let canapDisplay = () => {
       }
       fetchApiProduct();
 
-      //J'affiche mes produits présents dans le localStorage/localStorage
+      //J'affiche mes produits présents localStorage
       function displayRestProduct(kanap) {
-        //Je crée un nouvel objet en récupérant mes informations du local storage et en ajoutant les autres informations dont le prix
+        // les informations du local storage 
         let productCanap = {
           id: product.id,
           name: kanap.name,
@@ -45,7 +45,7 @@ let canapDisplay = () => {
           price: kanap.price,
         };
 
-        //J'insère les informations de chaque produit dans la page panier
+        //chaque produit dans la page panier
         let cartItem = document.getElementById("cart__items");
 
         cartItem.innerHTML += `<article class="cart__item" data-id="${productCanap.id}" data-color="${productCanap.colors}">
@@ -70,20 +70,20 @@ let canapDisplay = () => {
                         </div>
                       </article>`;
 
-        //Fonction qui permet de modifier la quantité d'un produit
+        // modifier la quantité d'un produit
         function modifyQuantity() {
           //Je cible la quantité à modifier
           quantityProduct = document.querySelectorAll(".itemQuantity");
 
           quantityProduct.forEach((item) => {
-            //J'attrape la div article englobant le bouton pour modifier la quantité
+            // le bouton pour modifier la quantité
             let cart = item.closest("article");
 
-            //Je récupère l'id et la couleur de l'article grâce au dataset stocké dans cart
+            //Je récupère l'id et la couleur de l'article
             let idDelete = cart.dataset.id;
             let colorDelete = cart.dataset.color;
 
-            //Je déclare la variable qui va recevoir la nouvelle quantité
+            // la nouvelle quantité
             let newQuantity = "";
 
             //J'écoute item lorsque celui-ci change
@@ -91,7 +91,7 @@ let canapDisplay = () => {
               event.preventDefault();
               newQuantity = Number(item.value);
 
-              //Je crée une boucle pour trouver le produit qui a été ciblé grâce à son id et sa couleur
+              //Je crée une boucle pour trouver le produit grâce à son id et sa couleur
               for (let i = 0; i < canap.length; i++) {
                 if (newQuantity < 0  ) {
                   alert("Veuillez indiquer une quantité supérieur a 0 Merci");
@@ -111,10 +111,10 @@ let canapDisplay = () => {
                   canap[i].quantity = newQuantity;
                 }
               }
-              //J'appelle la fonction qui calcule le total des quantités et le total des prix
+              // calcule le total des quantités et le total des prix
               getTotals();
 
-              //Alerte pour avertir que le produit va être ajouté au panier
+              
               alert("Votre quantité va être mise à jour");
 
               //J'enregistre le nouveau panier
@@ -124,7 +124,7 @@ let canapDisplay = () => {
         }
         modifyQuantity();
 
-        //Fonction qui calcule le total des quantités et le total des prix
+        //le total des quantités et le total des prix
         function getTotals() {
           //Je crée mes variables en ciblant le texte HTML
           let quantityProduct = document.getElementsByClassName("itemQuantity");
@@ -134,11 +134,11 @@ let canapDisplay = () => {
           );
           let productTotalPrice = document.getElementById("totalPrice");
 
-          //J'initialise mes variables de quantités totales
+          //les variables de quantités totales
           let totalQtt = 0;
           let totalPrice = 0;
 
-          //Je crée une boucle qui parcourt chaque quantity de produit
+          
           for (let i = 0; i < quantityProduct.length; ++i) {
             let quantity = quantityProduct[i].valueAsNumber;
             let price = priceDiv[i].innerText.replace("€", "");
@@ -155,19 +155,19 @@ let canapDisplay = () => {
         }
         getTotals();
 
-        //Fonction qui permet de supprimer un produit
+        // supprimer un produit
         function deleteProduct() {
-          //Je cible mes boutons supprimer
+         
           let deleteButton = document.querySelectorAll(".deleteItem");
 
-          //Je crée une boucle sur les boutons supprimer
+         
           deleteButton.forEach((item) => {
-            //J'écoute item au clic sur le bouton supprimer ciblé
+            // clic sur le bouton supprimer 
             item.addEventListener("click", (event) => {
-              //J'attrape la div article englobant le bouton supprimer
+              //le bouton supprimer
               let cart = item.closest("article");
 
-              //Je récupère l'id et la couleur de l'article grâce au dataset stocké dans cart
+              //Je récupère l'id et la couleur vaec le dataset stocké dans cart
               let idDelete = cart.dataset.id;
               let colorDelete = cart.dataset.color;
 
@@ -183,10 +183,10 @@ let canapDisplay = () => {
               //Je retire la div cart du dom
               cart.remove();
 
-              //J'appelle la fonction qui calcule le total des quantités et le total des prix
+              // calcule le total des quantités et le total des prix
               getTotals();
 
-              //Alerte pour avertir que le produit va être supprimé du panier
+          
               alert("Ce produit va être supprimé de votre panier");
               location.reload();
             });
@@ -243,7 +243,7 @@ function validFirstName(firstName) {
     valid = true;
   } else {
     errFirstName.innerText = "Veuillez entrer un prénom valide";
-    alert("attention plus de trois lettres et pas de caractère spéciaux !!!");
+    alert("Pour le prénom plus de trois lettres et pas de caractère spéciaux !!!");
 
     valid = false;
   }
@@ -267,7 +267,7 @@ function validLastName(lastName) {
     valid = true;
   } else {
     errLastName.innerText = "Veuillez entrer un nom valide";
-    alert("attention plus de trois lettres et pas de caractère spéciaux !!!");
+    alert("Pour le nom plus de trois lettres et pas de caractère spéciaux !!!");
     valid = false;
   }
   return valid;
