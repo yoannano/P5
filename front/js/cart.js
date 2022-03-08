@@ -227,11 +227,11 @@ let errEmail = document.getElementById("emailErrorMsg");
 
 //----------------------------------FIRST NAME---------------------------------------------------
 //J'écoute la variable inputFirstName avec addEventListener
-// inputFirstName.addEventListener("input", function (e) {
-//   e.preventDefault();
-//   validFirstName(e.target.value);
-//   contact.firstName = e.target.value;
-// });
+inputFirstName.addEventListener("input", function (e) {
+  e.preventDefault();
+  // validFirstName(e.target.value);
+  contact.firstName = e.target.value;
+});
 
 // Fonction qui vérifie à l'aide d'une regex que le champ prénom soit renseigné correctement (ne pas contenir de chiffres)
 function validFirstName(firstName) {
@@ -253,7 +253,7 @@ function validFirstName(firstName) {
 //--------------------------------Last Name------------------------------------------------------
 //J'écoute la variable inputLastName avec addEventListener
 inputLastName.addEventListener("input", function (e) {
-  validLastName(e.target.value);
+  // validLastName(e.target.value);
   contact.lastName = e.target.value;
 });
 
