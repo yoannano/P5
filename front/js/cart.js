@@ -229,7 +229,7 @@ let errEmail = document.getElementById("emailErrorMsg");
 //J'écoute la variable inputFirstName avec addEventListener
 inputFirstName.addEventListener("input", function (e) {
   e.preventDefault();
-  // validFirstName(e.target.value);
+ 
   contact.firstName = e.target.value;
 });
 
@@ -253,7 +253,7 @@ function validFirstName(firstName) {
 //--------------------------------Last Name------------------------------------------------------
 //J'écoute la variable inputLastName avec addEventListener
 inputLastName.addEventListener("input", function (e) {
-  // validLastName(e.target.value);
+ 
   contact.lastName = e.target.value;
 });
 
