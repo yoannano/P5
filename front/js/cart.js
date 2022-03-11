@@ -1,9 +1,9 @@
-/* Je récupère mon panier du local storage */
+
 let canap = JSON.parse(localStorage.getItem("product"));
 
-/* J'affiche mon panier */
+
 let canapDisplay = () => {
-  // si mon panier est vide 
+ 
   if (canap == null || canap == 0) {
     document.getElementById("totalQuantity").innerText = 0;
     document.getElementById("totalPrice").innerText = 0;
@@ -11,10 +11,10 @@ let canapDisplay = () => {
       "cart__items"
     ).innerHTML += `<h2 style="text-align:center; margin-bottom:80px;">Vous n'avez aucun article dans votre panier</h2>`;
   }
-  // pour chaque produit dans le panier, je récupére l'Id depuis mon API 
+  
   else {
     for (let product of canap) {
-      // récupère les produits depuis l'API grâce à leur Id
+     
       function fetchApiProduct() {
         fetch(`http://localhost:3000/api/products/` + product.id)
           .then((res) => {
@@ -23,7 +23,7 @@ let canapDisplay = () => {
             }
           })
           .then((data) => {
-            //J'affiche les caractéristiques des produits
+           
             displayRestProduct(data);
           })
           .catch((err) => {
@@ -32,9 +32,9 @@ let canapDisplay = () => {
       }
       fetchApiProduct();
 
-      //J'affiche mes produits présents localStorage
+   
       function displayRestProduct(kanap) {
-        // les informations du local storage 
+       
         let productCanap = {
           id: product.id,
           name: kanap.name,
@@ -45,7 +45,7 @@ let canapDisplay = () => {
           price: kanap.price,
         };
 
-        //chaque produit dans la page panier
+      
         let cartItem = document.getElementById("cart__items");
 
         cartItem.innerHTML += `<article class="cart__item" data-id="${productCanap.id}" data-color="${productCanap.colors}">
@@ -70,63 +70,59 @@ let canapDisplay = () => {
                         </div>
                       </article>`;
 
-        // modifier la quantité d'un produit
+       
         function modifyQuantity() {
-          //Je cible la quantité à modifier
+       
           quantityProduct = document.querySelectorAll(".itemQuantity");
 
           quantityProduct.forEach((item) => {
-            // le bouton pour modifier la quantité
+         
             let cart = item.closest("article");
 
-            //Je récupère l'id et la couleur de l'article
+         
             let idDelete = cart.dataset.id;
             let colorDelete = cart.dataset.color;
 
-            // la nouvelle quantité
+       
             let newQuantity = "";
 
-            //J'écoute item lorsque celui-ci change
+           
             item.addEventListener("change", (event) => {
               event.preventDefault();
               newQuantity = Number(item.value);
 
-              //Je crée une boucle pour trouver le produit grâce à son id et sa couleur
               for (let i = 0; i < canap.length; i++) {
-                if (newQuantity < 0  ) {
+                if (newQuantity < 0) {
                   alert("Veuillez indiquer une quantité supérieur a 0 Merci");
-                 
+
                   newQuantity = 0;
-                 
-                  item.value = newQuantity
-                 
+
+                  item.value = newQuantity;
+                } else if (newQuantity > 100) {
+                  newQuantity = 100;
+                  item.value = newQuantity;
+                  alert("Veuillez mettre moin de 100");
                 }
-                else if (newQuantity > 100) {
-                  newQuantity = 100
-                  item.value = newQuantity
-                  alert("Veuillez mettre moin de 100")
-                }
-                
+
                 if (canap[i].id == idDelete && canap[i].colors == colorDelete) {
                   canap[i].quantity = newQuantity;
                 }
               }
-              // calcule le total des quantités et le total des prix
+             
               getTotals();
 
-              
               alert("Votre quantité va être mise à jour");
 
-              //J'enregistre le nouveau panier
+         
               localStorage.setItem("product", JSON.stringify(canap));
             });
           });
         }
         modifyQuantity();
 
-        //le total des quantités et le total des prix
+     
         function getTotals() {
-          //Je crée mes variables en ciblant le texte HTML
+        
           let quantityProduct = document.getElementsByClassName("itemQuantity");
           let productTotalQuantity = document.getElementById("totalQuantity");
           let priceDiv = document.querySelectorAll(
@@ -134,16 +130,15 @@ let canapDisplay = () => {
           );
           let productTotalPrice = document.getElementById("totalPrice");
 
-          //les variables de quantités totales
+        
           let totalQtt = 0;
           let totalPrice = 0;
 
-          
           for (let i = 0; i < quantityProduct.length; ++i) {
             let quantity = quantityProduct[i].valueAsNumber;
             let price = priceDiv[i].innerText.replace("€", "");
 
-            //Je convertis price en nombre
+           
             let priceNumber = Number(price);
 
             totalQtt += quantity;
@@ -155,38 +150,34 @@ let canapDisplay = () => {
         }
         getTotals();
 
-        // supprimer un produit
+     
         function deleteProduct() {
-         
           let deleteButton = document.querySelectorAll(".deleteItem");
 
-         
           deleteButton.forEach((item) => {
-            // clic sur le bouton supprimer 
+          
             item.addEventListener("click", (event) => {
-              //le bouton supprimer
+          
               let cart = item.closest("article");
 
-              //Je récupère l'id et la couleur vaec le dataset stocké dans cart
+            
               let idDelete = cart.dataset.id;
               let colorDelete = cart.dataset.color;
 
-              //Je retire l'élément cliqué du tableau canap
               canap = canap.filter(
                 (element) =>
                   element.id !== idDelete || element.colors !== colorDelete
               );
 
-              //Je push canap dans le storage
+           
               localStorage.setItem("product", JSON.stringify(canap));
 
-              //Je retire la div cart du dom
+           
               cart.remove();
 
-              // calcule le total des quantités et le total des prix
+             
               getTotals();
 
-          
               alert("Ce produit va être supprimé de votre panier");
               location.reload();
             });
@@ -200,7 +191,7 @@ let canapDisplay = () => {
 };
 //-------------------------------Formulaire Utilisateur--------------------------------------
 
-//Je déclare mon objet contact pour récupérer les informations saisies par l'utilisateur
+
 let contact = {
   firstName: "",
   lastName: "",
@@ -208,17 +199,17 @@ let contact = {
   city: "",
   email: "",
 };
-//Je crée un tableau pour récupérer l'id des produits dans le panier
+
 let products = [];
 
-//Je cible les balises d'input du formulaire
+
 let inputFirstName = document.getElementById("firstName");
 let inputLastName = document.getElementById("lastName");
 let inputAddress = document.getElementById("address");
 let inputCity = document.getElementById("city");
 let inputEmail = document.getElementById("email");
 
-//Je cible les balises contenant les erreurs s'il y en a
+
 let errFirstName = document.getElementById("firstNameErrorMsg");
 let errLastName = document.getElementById("lastNameErrorMsg");
 let errAddress = document.getElementById("addressErrorMsg");
@@ -226,14 +217,13 @@ let errCity = document.getElementById("cityErrorMsg");
 let errEmail = document.getElementById("emailErrorMsg");
 
 //----------------------------------FIRST NAME---------------------------------------------------
-//J'écoute la variable inputFirstName avec addEventListener
+
 inputFirstName.addEventListener("input", function (e) {
   e.preventDefault();
- 
   contact.firstName = e.target.value;
 });
 
-// Fonction qui vérifie à l'aide d'une regex que le champ prénom soit renseigné correctement (ne pas contenir de chiffres)
+
 function validFirstName(firstName) {
   let regexFirstName = /^([A-Za-z]{3,20}-{0,1})?([A-Za-z]{3,20})$/;
   let valid = false;
@@ -243,21 +233,20 @@ function validFirstName(firstName) {
     valid = true;
   } else {
     errFirstName.innerText = "Veuillez entrer un prénom valide";
-    alert("Pour le prénom plus de trois lettres et pas de caractère spéciaux !!!");
-
+    alert("Pour le prénom entre 3 et 40 lettres et pas de caractère spéciaux merci !!!");
+   
     valid = false;
   }
   return valid;
 }
 
 //--------------------------------Last Name------------------------------------------------------
-//J'écoute la variable inputLastName avec addEventListener
+
 inputLastName.addEventListener("input", function (e) {
- 
   contact.lastName = e.target.value;
 });
 
-// Fonction qui vérifie à l'aide d'une regex que le champ nom soit renseigné correctement (ne pas contenir de chiffres)
+
 function validLastName(lastName) {
   let regexLastName = /^([A-Za-z]{3,20}-{0,1})?([A-Za-z]{3,20})$/;
   let valid = false;
@@ -267,20 +256,20 @@ function validLastName(lastName) {
     valid = true;
   } else {
     errLastName.innerText = "Veuillez entrer un nom valide";
-    alert("Pour le nom plus de trois lettres et pas de caractère spéciaux !!!");
+    alert("Pour le nom entre 3 et 40 lettres et pas de caractère spéciaux merci !!!");
     valid = false;
   }
   return valid;
 }
 
 //--------------------------------ADDRESS-------------------------------------------------------
-//J'écoute la variable inputAddress avec addEventListener
+
 inputAddress.addEventListener("input", function (e) {
   validAddress(e.target.value);
   contact.address = e.target.value;
 });
 
-// Fonction qui vérifie à l'aide d'une regex que le champ l'adresse soit renseigné correctement (contenir des chiffres au début puis des lettres ex: 15 rue de la Tour)
+
 function validAddress(address) {
   let regexAddress = /^[0-9]{0,10}[a-zA-Zéèàïêç\s\-]{2,30}$/g;
   let valid = false;
@@ -295,13 +284,13 @@ function validAddress(address) {
   return valid;
 }
 //--------------------------------City---------------------------------------------------------
-//J'écoute la variable inputCity avec addEventListener
+
 inputCity.addEventListener("input", function (e) {
   validCity(e.target.value);
   contact.city = e.target.value;
 });
 
-// Fonction qui vérifie à l'aide d'une regex que le champ ville soit renseigné correctement (ne pas contenir de chiffres)
+
 function validCity(city) {
   let regexCity = /^[a-zA-Zéèàïêç\-\s]{2,30}$/g;
   let valid = false;
@@ -317,13 +306,13 @@ function validCity(city) {
 }
 
 //--------------------------------Email-----------------------------------------------------------
-//J'écoute la variable inputEmail avec addEventListener
+
 inputEmail.addEventListener("input", function (e) {
   validEmail(e.target.value);
   contact.email = e.target.value;
 });
 
-// Fonction qui vérifie à l'aide d'une regex que le champ email soit renseigné correctement (être sous la forme de xxxx@xx.x)
+
 function validEmail(email) {
   let regexEmail =
     /^[a-zA-Zéèàïç0-9.!^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$/g;
@@ -339,14 +328,14 @@ function validEmail(email) {
   return valid;
 }
 
-//Je cible le bouton de soumission du formulaire
+
 let submitButton = document.getElementById("order");
 
-//AddEventListener qui fonctionne seulement si tous les champs sont correctement remplis
+
 submitButton.addEventListener("click", (event) => {
   event.preventDefault();
 
-  //Je vérifie si tous les champs sont valides
+  
   if (
     validFirstName(contact.firstName) == false ||
     validFirstName(contact.firstName) == null ||
@@ -362,22 +351,20 @@ submitButton.addEventListener("click", (event) => {
   ) {
     return errAddress || errCity || errEmail || errFirstName || errLastName;
   } else {
-    //J'enregistre dans le local storage les informations de l'utilisateur
+   
     localStorage.setItem("contact", JSON.stringify(contact));
 
-    //Je crée une boucle sur tous les produits du panier pour récupérer les id des produits
+   
     for (let i = 0; i < canap.length; i++) {
       products.push(canap[i].id);
     }
 
-    //Je crée mon objet pour envoyer mes informations utilisateurs et mes id à l'API
     const order = {
       contact: contact,
       products: products,
     };
 
-    //Fonction fetch qui envoie à l'API les données saisies par l'utilisateur et son panier
-    //Option nécessaire à l'Api pour utiliser POST
+
     const apiId = {
       method: "POST",
       headers: {
@@ -387,7 +374,7 @@ submitButton.addEventListener("click", (event) => {
       body: JSON.stringify(order),
     };
 
-    //Envoi des données au serveur
+
     fetch("https://api-kanap-eu.herokuapp.com/api/products/order", apiId)
       .then((res) => {
         if (res.ok) {
