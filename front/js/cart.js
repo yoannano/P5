@@ -202,7 +202,7 @@ function validFirstName(firstName) {
   } else {
     errFirstName.innerText = "Veuillez entrer un prénom valide";
     alert(
-      "Pour le prénom entre 3 et 40 lettres et pas de caractère spéciaux merci !!!"
+      "le prénom doit avoir 3 lettres minimum et pas de caractère spéciaux merci !!!"
     );
 
     valid = false;
@@ -226,7 +226,7 @@ function validLastName(lastName) {
   } else {
     errLastName.innerText = "Veuillez entrer un nom valide";
     alert(
-      "Pour le nom entre 3 et 40 lettres et pas de caractère spéciaux merci !!!"
+      "le nom doit avoir 3 lettres minimum et pas de caractère spéciaux merci !!!"
     );
     valid = false;
   }
