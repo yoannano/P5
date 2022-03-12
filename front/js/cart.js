@@ -76,7 +76,7 @@ let canapDisplay = () => {
               newQuantity = Number(item.value);
 
               for (let i = 0; i < canap.length; i++) {
-                if (newQuantity < 0) {
+                if (newQuantity < 1) {
                   alert("Veuillez indiquer une quantité supérieur a 0 Merci");
 
                   newQuantity = 0;
